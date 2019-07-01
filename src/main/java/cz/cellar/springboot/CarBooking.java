@@ -1,10 +1,20 @@
 package cz.cellar.springboot;
 
-public class CarBooking {
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
+@Entity
+public class CarBooking {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private long id;
     private String carName;
     private double pricePerDay;
     private int numberOfDays;
+
+    public CarBooking(){};
 
     public CarBooking(String carName, double pricePerDay, int nbOfDays) {
         this.carName = carName;
@@ -30,6 +40,10 @@ public class CarBooking {
 
     public double getTotalPrice(){
         return pricePerDay * getNumberOfDays();
+    }
+
+    public long getId(){
+        return id;
     }
 
 }

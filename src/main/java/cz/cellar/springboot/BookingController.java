@@ -1,5 +1,6 @@
 package cz.cellar.springboot;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -9,33 +10,33 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(value = "/bookings")
 public class BookingController {
-    private List<CarBooking> bookings;
 
-    public BookingController(){
-        bookings = new ArrayList<>();
-
-        bookings.add(new CarBooking("Skoda Octavia v2", 3500.0, 2));
-
-        bookings.add(new CarBooking("Ferrari 950c", 9000.0, 1));
-
-        bookings.add(new CarBooking("Mercedes Benz", 4500.0, 4));
-
+    private BookingRepository bookingRepository;
+    @Autowired
+    public BookingController(BookingRepository bookingRepository){
+       this.bookingRepository=bookingRepository;
     }
     @RequestMapping(value = "/all", method = RequestMethod.GET)
     public List<CarBooking> getAll(){
-        return bookings;
+        return bookingRepository.findAll();
     }
 
-    @RequestMapping(value = "/affordable/{cena}", method = RequestMethod.GET)
+    @RequestMapping(value = "/affordable/{price}", method = RequestMethod.GET)
     public List<CarBooking> getAffordable(@PathVariable double price){
-        return bookings.stream().filter(x->x.getPricePerDay()<=price).collect(Collectors.toList());
-
+      return bookingRepository.findByPricePerDayLessThan(price);
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public List<CarBooking> create(@RequestBody CarBooking carBooking){
-        bookings.add(carBooking);
-        return bookings;
+        bookingRepository.save(carBooking);
+        return bookingRepository.findAll();
+    }
+
+    @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
+    public List<CarBooking> remove(@PathVariable long id){
+        bookingRepository.deleteById(id);
+
+        return bookingRepository.findAll();
     }
 
 }
